@@ -178,7 +178,7 @@
                   href="#"
                   type="text"
                   icon="el-icon-document"
-                  @click="handleAndal(scope.row)"
+                  @click="handleAndal(scope.row, scope.row.perbaikan)"
                 >
                   Andal
                 </el-button>
@@ -187,7 +187,7 @@
                   href="#"
                   type="text"
                   icon="el-icon-document"
-                  @click="handleRklRpl(scope.row)"
+                  @click="handleRklRpl(scope.row, scope.row.perbaikan)"
                 >
                   RKL/RPL
                 </el-button>
@@ -1417,10 +1417,18 @@ export default {
         }
       );
     },
-    handleAndal(project) {
-      this.$router.push({
-        path: `/amdal/${project.id}/penyusunan-andal`,
-      });
+    handleAndal(project, perbaikan) {
+      if (perbaikan === true) {
+        this.$alert('Menu <b> ANDAL </b> Terkunci, Silahkan Klik Tombol <b> Workspace ANDAL </b> Untuk Melakukan Perbaikan Pada Menu ini.', 'Peringatan', {
+          confirmButtonText: 'Confirm',
+          center: true,
+          dangerouslyUseHTMLString: true,
+        });
+      } else {
+        this.$router.push({
+          path: `/amdal/${project.id}/penyusunan-andal`,
+        });
+      }
     },
     handleMatUklUpl(project, perbaikan) {
       if (perbaikan === true) {
@@ -1441,10 +1449,18 @@ export default {
       }
       return false;
     },
-    handleRklRpl(project) {
-      this.$router.push({
-        path: `/amdal/${project.id}/penyusunan-rkl-rpl`,
-      });
+    handleRklRpl(project, perbaikan) {
+      if (perbaikan === true) {
+        this.$alert('Menu <b> ANDAL </b> Terkunci, Silahkan Klik Tombol <b> Workspace RKL RPL </b> Untuk Melakukan Perbaikan Pada Menu ini.', 'Peringatan', {
+          confirmButtonText: 'Confirm',
+          center: true,
+          dangerouslyUseHTMLString: true,
+        });
+      } else {
+        this.$router.push({
+          path: `/amdal/${project.id}/penyusunan-rkl-rpl`,
+        });
+      }
     },
     handleLpjpTeam(project) {
       this.$router.push({

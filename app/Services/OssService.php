@@ -65,7 +65,7 @@ class OssService
                                 'kd_penerimaan' => null,
                                 'nominal' => null,
                             ],
-                        ]                           
+                        ]
                     ]
                 ];
                 // print_r($data);
@@ -166,7 +166,7 @@ class OssService
         foreach ($subProjectsAmdalnet as $sp) {
             array_push($subProjectsAmdalnetIdProyeks, $sp->id_proyek);
         }
-        
+
         return [
             'ossNib' => $ossNib,
             'initiator' => $initiator,
