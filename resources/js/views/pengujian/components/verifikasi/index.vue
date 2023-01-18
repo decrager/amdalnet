@@ -88,7 +88,7 @@
                 v-model="scope.row.suitability"
                 placeholder="Pilih Kesesuaian"
                 style="width: 100%"
-                :disabled="verifications.is_disabled"
+                :disabled="verifications.is_disabled || isSecretary ? true:false"
               >
                 <el-option
                   v-for="sesuai in kesesuaian"
@@ -108,7 +108,7 @@
                 v-model="scope.row.description"
                 type="textarea"
                 :placeholder="getPlaceholder(scope.row.suitability)"
-                :readonly="verifications.is_disabled"
+                :readonly="verifications.is_disabled || isSecretary ? true:false"
                 :class="{ 'is-error': errors[`form-${scope.$index}`] }"
               />
               <span v-else>-</span>
@@ -337,6 +337,11 @@ export default {
         dokumen_sppl_oss: 'Dokumen SPPL dari oss',
       },
     };
+  },
+  computed: {
+    isSecretary() {
+      return this.$store.getters.user.roles.includes('examiner-secretary');
+    },
   },
   created() {
     this.getVerifications();

@@ -131,7 +131,12 @@ export default {
           };
         }
       });
-      this.masterMembers = [...this.masterMembers, ...tukMembers];
+      const emailtuk = this.$store.getters.user.email;
+      const newMasterMembers = tukMembers.filter(data => data.email !== emailtuk);
+      console.log(this.masterMembers);
+      console.log(newMasterMembers);
+      this.masterMembers = [...this.masterMembers, ...newMasterMembers];
+      // this.masterMembers = [...this.masterMembers, ...tukMembers];
       this.masterMembers.sort((a, b) => {
         const nameA = a.name.toUpperCase();
         const nameB = b.name.toUpperCase();
@@ -141,7 +146,6 @@ export default {
         if (nameA > nameB) {
           return 1;
         }
-
         return 0;
       });
       this.title = title;

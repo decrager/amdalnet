@@ -301,7 +301,7 @@ class ImpactIdentificationController extends Controller
                             $updated++;
                             array_push($response, $toUpdate);
                         } catch (Exception $e) {
-                            array_push($errors, 'Gagal menyimpan Dampak.');
+                            array_push($errors, 'Gagal menyimpan Dampak. +'. $e->getMessage());
                         }
                     }
                 }

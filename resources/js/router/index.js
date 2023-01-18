@@ -37,6 +37,7 @@ import scopingRoutes from './modules/scoping';
 import screeningRoutes from './modules/screening';
 import digWorkRoutes from './modules/digwork';
 import businessRoutes from './modules/business';
+import plChangesRoutes from './modules/plChanges';
 // import ukluplStaticRoutes from './modules/ukluplStatic';
 
 /**
@@ -289,6 +290,7 @@ export const asyncRoutes = [
   tukRoutes,
   announcementRoutes,
   feedbackRoutes,
+  plChangesRoutes,
   // workspaceRoutes,
   amdalRoutes,
   ukluplRoutes,

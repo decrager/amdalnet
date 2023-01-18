@@ -227,6 +227,26 @@ class OssService
                 } else if (strtolower($project->authority) == 'kabupaten') {
                     $authorityNew = '02';
                 }
+                // $data = [
+                //     'IZINSTATUS' => [
+                //         'nib' => $ossNib->nib,
+                //         'id_produk' => $idProduct,
+                //         'id_proyek' => $dataProject['id_proyek'],
+                //         'oss_id' => $ossNib->oss_id,
+                //         'id_izin' => $idIzin,
+                //         'kd_izin' => $ossNib->kd_izin,
+                //         'kd_instansi' => $dataProject['sektor'],
+                //         'kd_status' => $statusCode,
+                //         'tgl_status' => (string)$project->updated_at,
+                //         'nip_status' => null, // NULL
+                //         'nama_status' => OssService::getStatusNameOss($statusCode),
+                //         'keterangan' => OssService::getStatusNameAmdalnet($statusCode),
+                //         'id_daerah' => $jsonContent['kd_daerah'],
+                //         'kewenangan' => $jsonContent['kewenangan'],
+                //         'kewenangan_new' => $authorityNew,
+                //         'kd_izin_new' => $kdIzinNew,
+                //     ],
+                // ];
                 $data = [
                     'IZINSTATUS' => [
                         'nib' => $ossNib->nib,
@@ -241,10 +261,21 @@ class OssService
                         'nip_status' => null, // NULL
                         'nama_status' => OssService::getStatusNameOss($statusCode),
                         'keterangan' => OssService::getStatusNameAmdalnet($statusCode),
-                        'id_daerah' => $jsonContent['kd_daerah'],
-                        'kewenangan' => $jsonContent['kewenangan'],
-                        'kewenangan_new' => $authorityNew,
-                        'kd_izin_new' => $kdIzinNew,
+                        // 'id_daerah' => $jsonContent['kd_daerah'],
+                        // 'kewenangan' => $jsonContent['kewenangan'],
+                        // 'kewenangan_new' => $authorityNew,
+                        // 'kd_izin_new' => $kdIzinNew,
+                        'data_pnbp' => [
+                            [
+                                'kd_akun' => null,
+                                'kd_penerimaan' => null,
+                                'kd_billing' => null,
+                                'tgl_billing' => null,
+                                'tgl_expire' => null,
+                                'nominal' => null,
+                                'url_dokumen' => null,
+                            ],
+                        ]
                     ],
                 ];
                 $response = Http::withHeaders([

@@ -779,6 +779,7 @@ class MatriksRKLController extends Controller
                 'type' => 'subtitle',
                 'impact_source' => $impact_source,
                 'success_indicator' => $success_indicator,
+                'stages' => $s->name,
                 'form' =>
                     $type == 'new' ?
                     [] :
@@ -913,6 +914,7 @@ class MatriksRKLController extends Controller
                 'name' => "$changeType $ronaAwal akibat $component",
                 'type' => 'subtitle',
                 'impact_source' => $impact_source,
+                'stages' => $s->name,
                 'success_indicator' => $success_indicator,
                 'form' =>
                     $type == 'new' ?

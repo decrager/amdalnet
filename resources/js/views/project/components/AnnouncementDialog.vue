@@ -128,6 +128,7 @@
 
         <div style="margin: 1em auto 2em;">
           <p style="font-weight:bold;">Pengumuman</p>
+          <span style="font-size: 90%; font-weight: 500; margin-right: .5rem;">Apakah pengumuman dan spt sudah selesai dilakukan?</span><el-checkbox v-model="status" prop="is_done" />
           <div style="border:1px solid #efefef; border-radius: 0.3em; padding: 1em 2em;">
             <el-row :gutter="8">
               <el-col :span="12">
@@ -262,6 +263,7 @@ export default {
   data(){
     return {
       fileName: 'File Not Found',
+      status: false,
       announcementRules: {
         pic_name: [{ required: true, trigger: 'blur', message: 'Data Belum Diisi' }],
         pic_address: [{ required: true, trigger: 'blur', message: 'Data Belum Diisi' }],
@@ -352,6 +354,7 @@ export default {
     handleSubmitAnnouncement() {
       // this.confirmPublishDialog = false;
       this.announcement.publish = true;
+      this.announcement.is_done = this.status;
       this.$emit('handleSubmitAnnouncement', this.fileProof);
 
       /* this.$refs.announcement.validate(valid => {
@@ -383,7 +386,7 @@ export default {
       this.$refs.fileProofUpload.clearValidate(); //  Turn off verification
     },
     disabledPastDates(time){
-      return time.getTime() < this.yesterday;
+      return this.status === false ? time.getTime() < this.yesterday : time.getTime() > this.yesterday;
     },
     showFileAlert() {
       this.$alert('Ukuran file tidak boleh lebih dari 1 MB', '', {

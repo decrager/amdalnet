@@ -288,19 +288,19 @@ class MatriksRPLController extends Controller
          if(count($delete_ip) > 0) {
              EnvPlanSource::whereIn('id', $delete_ip)->delete();
          }
- 
+
          // DELETE INDICATOR
          $delete_i = $request->deletedIndicator;
          if(count($delete_i) > 0) {
              EnvPlanIndicator::whereIn('id', $delete_i)->delete();
          }
- 
+
          // DELETE COLLECTION METHOD
          $delete_cm = $request->deletedCollectionMethod;
          if(count($delete_cm) > 0) {
              EnvPlanForm::whereIn('id', $delete_cm)->delete();
          }
- 
+
          // DELETE LOCATION
          $delete_loc = $request->deletedLocation;
          if(count($delete_loc) > 0) {
@@ -313,7 +313,7 @@ class MatriksRPLController extends Controller
             $project->workflow_apply('draft-amdal-rklrpl');
             $project->save();
         }
-        
+
         if($request->type != 'new') {
             $lastTime = EnvMonitorPlan::whereIn('id_impact_identifications', $ids)->orderBy('updated_at', 'DESC')->first()
                             ->updated_at->locale('id')->diffForHumans();
@@ -478,6 +478,7 @@ class MatriksRPLController extends Controller
                     'type' => 'subtitle',
                     'impact_source' => $impact_source,
                     'indicator' => $indicator,
+                    'stages' => $s->name,
                     'collection_method' =>
                         $type == 'new' ?
                         [] :
@@ -614,6 +615,7 @@ class MatriksRPLController extends Controller
                     'type' => 'subtitle',
                     'impact_source' => $impact_source,
                     'indicator' => $indicator,
+                    'stages' => $s->name,
                     'collection_method' =>
                         $type == 'new' ?
                         [] :

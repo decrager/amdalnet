@@ -64,7 +64,7 @@
               <span style="color: red">Buat Akun Baru</span>
             </el-button>
           </el-row>
-          <!-- <el-divider>atau</el-divider>
+          <el-divider>atau</el-divider>
           <div style="text-align: start; margin-bottom: 15px;">
             <span style="font-size: smaller; color: black;">Masuk dengan Akun OSS RBA</span>
           </div>
@@ -80,7 +80,7 @@
                 </div>
               </el-button>
             </router-link>
-          </el-row> -->
+          </el-row>
         </el-form>
       </div>
     </div>

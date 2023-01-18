@@ -25,6 +25,7 @@ class Announcement extends Model
         'project_id',
         'project_result',
         'id_applicant',
+        'is_done',
     ];
 
     public function feedbacks()

@@ -193,6 +193,7 @@ class AnnouncementController extends Controller
             'potential_impact' => 'required',
             'start_date' => 'required',
             'end_date' => 'required',
+            'is_done' => 'required',
             // 'fileProof' => 'required',
         ];
         $announcement = Announcement::where('project_id', $request->project_id)->first();
@@ -239,7 +240,7 @@ class AnnouncementController extends Controller
                     // 'project_id' => $params['project_id'],
                     'project_result' => $params['project_result'],
                     'id_applicant' => $params['id_applicant'],
-
+                    'is_done' => $params['is_done'],
                 ];
                 if($file){
                     if (Storage::disk('public')->exists($announcement->rawProof()))
@@ -254,6 +255,7 @@ class AnnouncementController extends Controller
 
             }else {
             //create Announcement
+            // dd($params['is_done'], $params['id_applicant']);
                 $announcement = Announcement::create([
                     'pic_name' => $params['pic_name'],
                     'pic_address' => $params['pic_address'],
@@ -269,6 +271,7 @@ class AnnouncementController extends Controller
                     'project_id' => $params['project_id'],
                     'project_result' => $params['project_result'],
                     'id_applicant' => $params['id_applicant'],
+                    'is_done' => $params['is_done'],
                 ]);
             }
 

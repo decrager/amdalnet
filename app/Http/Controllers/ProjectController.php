@@ -39,6 +39,8 @@ use App\Utils\TemplateProcessor;
 use PhpOffice\PhpWord\Element\Table;
 use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\Shared\Html;
+use App\Entity\FeasibilityTestTeam;
+use App\Entity\FeasibilityTestTeamMember;
 
 class ProjectController extends Controller
 {
@@ -179,10 +181,10 @@ class ProjectController extends Controller
                             ->orWhere('projects.description', 'ilike', '%' . $request->search . '%')
                             ->orWhere('projects.required_doc', 'ilike', '%' . $request->search . '%')
                             ->orWhere('projects.location_desc', 'ilike', '%' . $request->search . '%')
-                            ->orWhere('projects.kbli', 'ilike', '%' . $request->search . '%')
-                            ->orWhere('initiators.name', 'ilike', '%' . $request->search . '%')
-                            ->orWhere('project_address.district', 'ilike', '%' . $request->search . '%')
-                            ->orWhere('project_address.prov', 'ilike', '%' . $request->search . '%');
+                            ->orWhere('projects.kbli', 'ilike', '%' . $request->search . '%');
+                            // ->orWhere('initiators.name', 'ilike', '%' . $request->search . '%')
+                            // ->orWhere('project_address.district', 'ilike', '%' . $request->search . '%')
+                            // ->orWhere('project_address.prov', 'ilike', '%' . $request->search . '%');
                     }
                     return $query;
                 }
@@ -190,14 +192,52 @@ class ProjectController extends Controller
             ->where(
                 function ($query) use ($request) {
                     if ($request->tuk) {
+                        // if (!$request->filterTUK) {
+                        //     $query->whereHas('tukProject', function ($q) {
+                        //         $q->where('id_user', Auth::user()->id);
+                        //     })->orWhereHas('testingMeeting', function ($q) {
+                        //         $q->whereHas('invitations', function ($que) {
+                        //             $que->where('id_user', Auth::user()->id);
+                        //         });
+                        //     });
+                        // } else if ($request->filterTUK == 'pengujian') {
+                            // $query->whereHas('testingMeeting', function ($q) {
+                            //     $q->whereHas('invitations', function ($que) {
+                            //         $que->where('id_user', Auth::user()->id);
+                            //     });
+                            // })->whereDoesntHave('tukProject', function ($q) {
+                            //     $q->where('id_user', Auth::user()->id);
+                            // });
+                        // } else {
+                        //     $query->whereHas('tukProject', function ($q) use ($request) {
+                        //         $q->where('id_user', Auth::user()->id);
+                        //         $q->where('role', $request->filterTUK);
+                        //     });
+                        // }
                         if (!$request->filterTUK) {
-                            $query->whereHas('tukProject', function ($q) {
-                                $q->where('id_user', Auth::user()->id);
-                            })->orWhereHas('testingMeeting', function ($q) {
-                                $q->whereHas('invitations', function ($que) {
-                                    $que->where('id_user', Auth::user()->id);
+                            if ($request->tukActivityProcess){
+                                $team_id = $this->getIdTeamByMemberEmail(Auth::user()->email);
+                                $team = FeasibilityTestTeam::findOrFail($team_id);
+                                $query->where(function($q) use($team) {
+                                    if($team->authority == 'Pusat') {
+                                        $q->whereIn('authority', ['Pusat', 'pusat']);
+                                    } else if($team->authority == 'Provinsi') {
+                                        $q->where('auth_province', $team->id_province_name);
+                                        $q->whereIn('authority', ['Provinsi', 'provinsi']);
+                                    } else if($team->authority == 'Kabupaten/Kota') {
+                                        $q->where('auth_district', $team->id_district_name);
+                                        $q->whereIn('authority', ['Kabupaten', 'kabupaten']);
+                                    }
+                                })->has('tukProject', ''.'>'.'', 0);
+                            } else {
+                                $query->whereHas('tukProject', function ($q) {
+                                    $q->where('id_user', Auth::user()->id);
+                                })->orWhereHas('testingMeeting', function ($q) {
+                                    $q->whereHas('invitations', function ($que) {
+                                        $que->where('id_user', Auth::user()->id);
+                                    });
                                 });
-                            });
+                            }
                         } else if ($request->filterTUK == 'pengujian') {
                             $query->whereHas('testingMeeting', function ($q) {
                                 $q->whereHas('invitations', function ($que) {
@@ -208,9 +248,9 @@ class ProjectController extends Controller
                             });
                         } else {
                             $query->whereHas('tukProject', function ($q) use ($request) {
-                                $q->where('id_user', Auth::user()->id);
-                                $q->where('role', $request->filterTUK);
-                            });
+                                    $q->where('id_user', Auth::user()->id);
+                                    $q->where('role', $request->filterTUK);
+                                });
                         }
                     }
                 }
@@ -1412,5 +1452,26 @@ class ProjectController extends Controller
         $convertedUri = null;
         $download_url = Document::GetConvertedUri($downloadUri, 'docx', 'pdf', $key, FALSE, $convertedUri);
         return $convertedUri;
+    }
+
+    private function getIdTeamByMemberEmail($email) {
+        $id_team = null;
+
+        $team_member = FeasibilityTestTeamMember::whereHas('lukMember', function($q) use($email) {
+            $q->where('email', $email);
+        })->first();
+
+        if($team_member) {
+            $id_team = $team_member->id_feasibility_test_team;
+        } else {
+            $team_member = FeasibilityTestTeamMember::whereHas('expertBank', function($q) use($email) {
+                $q->where('email', $email);
+            })->first();
+            if($team_member) {
+                $id_team = $team_member->id_feasibility_test_team;
+            }
+        }
+
+        return $id_team;
     }
 }

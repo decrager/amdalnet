@@ -8,6 +8,7 @@
           <el-button
             :loading="loadingSubmit"
             type="primary"
+            :disabled="isSecretary ? true:false"
             @click="handleSubmit"
           >
             Simpan Perubahan
@@ -15,6 +16,7 @@
           <el-button
             :loading="loadingInvitationDocx"
             type="primary"
+            :disabled="isSecretary ? true:false"
             @click="handleDownloadInvitation"
           >
             Undangan Rapat
@@ -24,6 +26,7 @@
             style="margin-top: 10px"
             :loading="loadingSendInvitation"
             type="primary"
+            :disabled="isSecretary ? true:false"
             @click="sendInvitation"
           >
             Kirim Undangan Rapat
@@ -44,6 +47,7 @@
                   value-format="yyyy-MM-dd"
                   placeholder="Pilih tanggal"
                   style="width: 100%"
+                  :disabled="isSecretary ? true:false"
                 />
               </el-form-item>
             </el-col>
@@ -55,6 +59,7 @@
                   format="HH:mm"
                   value-format="HH:mm"
                   style="width: 100%"
+                  :disabled="isSecretary ? true:false"
                 />
               </el-form-item>
             </el-col>
@@ -64,6 +69,7 @@
                   v-model="meetings.zone"
                   placeholder="Pilih Zona Waktu"
                   style="width: 100%"
+                  :disabled="isSecretary ? true:false"
                 >
                   <el-option
                     v-for="item in zone"
@@ -76,7 +82,7 @@
             </el-col>
             <el-col :sm="24" :md="12">
               <el-form-item label="Tempat Rapat">
-                <el-input v-model="meetings.location" />
+                <el-input v-model="meetings.location" :disabled="isSecretary ? true:false" />
               </el-form-item>
             </el-col>
             <el-col :sm="24" :md="12">
@@ -87,6 +93,7 @@
                   size="medium"
                   icon="el-icon-download"
                   style="color: blue"
+                  :disabled="isSecretary ? true:false"
                   @click.prevent="download(meetings.invitation_file)"
                 >
                   Download Undangan Rapat Final
@@ -97,6 +104,7 @@
                   :on-change="handleUploadInvitationFile"
                   :show-file-list="false"
                   style="display: inline"
+                  :disabled="isSecretary ? true:false"
                 >
                   <el-tooltip
                     class="item"
@@ -104,7 +112,7 @@
                     content="Unggah Undangan Rapat Final yang sudah ditandatangani"
                     placement="top-start"
                   >
-                    <el-button size="small" type="warning"> Upload </el-button>
+                    <el-button size="small" type="warning" :disabled="isSecretary ? true:false"> Upload </el-button>
                   </el-tooltip>
                   <div slot="tip" class="el-upload__tip">
                     {{ invitation_file_name }}
@@ -114,7 +122,7 @@
             </el-col>
             <el-col :sm="24" :md="12">
               <el-form-item label="Apakah Rapat Akan diadakan Online?">
-                <el-checkbox v-model="status"><span style="font-size: 90%;">Checklist Jika 'Ya'</span></el-checkbox>
+                <el-checkbox v-model="status" :disabled="isSecretary ? true:false"><span style="font-size: 90%;">Checklist Jika 'Ya'</span></el-checkbox>
               </el-form-item>
             </el-col>
             <el-col v-if="status === true" :sm="24" :md="12">
@@ -146,6 +154,7 @@
                 v-model="scope.row.role"
                 placeholder="Pilih Peran"
                 style="width: 100%"
+                :disabled="isSecretary ? true:false"
                 @change="handleChangeRole($event, scope.$index)"
               >
                 <el-option
@@ -172,6 +181,7 @@
                 placeholder="Pilih Anggota"
                 style="width: 100%"
                 filterable
+                :disabled="isSecretary ? true:false"
                 @change="handleChangeName($event, scope.row.type, scope.$index)"
               >
                 <el-option
@@ -202,6 +212,7 @@
                 placeholder="Pilih Instansi"
                 style="width: 100%"
                 filterable
+                :disabled="isSecretary ? true:false"
               >
                 <el-option
                   v-for="item in scope.row.institution_options"
@@ -232,6 +243,7 @@
                     type="text"
                     icon="el-icon-close"
                     style="display: block"
+                    :disabled="isSecretary ? true:false"
                     @click.prevent="deleteRow(scope.$index, scope.row.id)"
                   />
                 </div>
@@ -241,6 +253,7 @@
                     type="text"
                     icon="el-icon-close"
                     style="display: block"
+                    :disabled="isSecretary ? true:false"
                     @click.prevent="deleteRow(scope.$index, scope.row.id)"
                   />
                 </div>
@@ -249,7 +262,7 @@
           </el-table-column>
         </el-table>
         <div style="margin-top: 10px">
-          <el-button icon="el-icon-plus" circle @click.prevent="addTableRow" />
+          <el-button icon="el-icon-plus" circle :disabled="isSecretary ? true:false" @click.prevent="addTableRow" />
         </div>
         <div v-if="meetings.type === 'update'" style="text-align: right">
           <el-button
@@ -270,6 +283,7 @@
               :loading="loadingUpload"
               type="primary"
               style="margin-top: 10px"
+              :disabled="isSecretary ? true:false"
             >
               Unggah Validasi Hasil Pemeriksaan Berkas Administrasi
             </el-button>
@@ -388,6 +402,9 @@ export default {
     baFileName() {
       const arrName = this.meetings.file.split('/');
       return arrName[arrName.length - 1];
+    },
+    isSecretary() {
+      return this.$store.getters.user.roles.includes('examiner-secretary');
     },
   },
   async created() {

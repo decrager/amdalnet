@@ -9,6 +9,7 @@
             value-format="yyyy-MM-dd"
             placeholder="Pilih tanggal"
             style="width: 100%"
+            :disabled="isSecretary ? true:false"
           />
         </el-form-item>
       </el-col>
@@ -20,12 +21,13 @@
             format="HH:mm"
             value-format="HH:mm"
             style="width: 100%"
+            :disabled="isSecretary ? true:false"
           />
         </el-form-item>
       </el-col>
       <el-col :sm="24" :md="24">
         <el-form-item label="Tempat Rapat">
-          <el-input v-model="reports.location" />
+          <el-input v-model="reports.location" :disabled="isSecretary ? true:false" />
         </el-form-item>
       </el-col>
     </el-row>
@@ -50,6 +52,11 @@ export default {
       timUjiKelayakan: [],
       pemrakarsa: [],
     };
+  },
+  computed: {
+    isSecretary() {
+      return this.$store.getters.user.roles.includes('examiner-secretary');
+    },
   },
   created() {
     this.getTimUjiKelayakan();
