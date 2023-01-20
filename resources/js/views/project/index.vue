@@ -142,7 +142,7 @@
                   href="#"
                   type="text"
                   icon="el-icon-document"
-                  @click="handleKerangkaAcuan(scope.row)"
+                  @click="handleKerangkaAcuan(scope.row, scope.row.marking)"
                 >
                   Formulir Kerangka Acuan
                 </el-button>
@@ -196,7 +196,7 @@
                   href="#"
                   type="text"
                   icon="el-icon-document"
-                  @click="handleDokumenAndalRklRpl(scope.row)"
+                  @click="handleDokumenAndalRklRpl(scope.row, scope.row.marking)"
                 >
                   Dokumen ANDAL RKL RPL
                 </el-button>
@@ -286,7 +286,7 @@
                   href="#"
                   type="text"
                   icon="el-icon-document"
-                  @click="handleWorkspaceKa(scope.row)"
+                  @click="handleWorkspaceKa(scope.row, scope.row.marking)"
                 >
                   Workspace KA
                 </el-button>
@@ -295,7 +295,7 @@
                   href="#"
                   type="text"
                   icon="el-icon-document"
-                  @click="handleWorkspaceAndal(scope.row.id)"
+                  @click="handleWorkspaceAndal(scope.row.id, scope.row.marking)"
                 >
                   Workspace Andal
                 </el-button>
@@ -304,7 +304,7 @@
                   href="#"
                   type="text"
                   icon="el-icon-document"
-                  @click="handleWorkspaceRKLRPL(scope.row.id)"
+                  @click="handleWorkspaceRKLRPL(scope.row.id, scope.row.marking)"
                 >
                   Workspace RKL RPL
                 </el-button>
@@ -1116,10 +1116,18 @@ export default {
           });
         });
     },
-    handleKerangkaAcuan(project) {
-      this.$router.push({
-        path: `/amdal/${project.id}/formulir`,
-      });
+    handleKerangkaAcuan(project, marking) {
+      if (marking === 'amdal.feasibility-returned') {
+        this.$alert('Menu <b> Formulir Kerangka Acuan</b> Terkunci, Silahkan Klik Tombol <b> Workspace ANDAL / Workspace RKL RPL </b>', 'Peringatan', {
+          confirmButtonText: 'Confirm',
+          center: true,
+          dangerouslyUseHTMLString: true,
+        });
+      } else {
+        this.$router.push({
+          path: `/amdal/${project.id}/formulir`,
+        });
+      }
     },
     handleKerangkaUklUpl(project, perbaikan) {
       if (perbaikan === true) {
@@ -1140,10 +1148,18 @@ export default {
         path: `/amdal/${project.id}/dokumen`,
       });
     },
-    handleDokumenAndalRklRpl(project) {
-      this.$router.push({
-        path: `/amdal/${project.id}/dokumen-andal-rkl-rpl`,
-      });
+    handleDokumenAndalRklRpl(project, marking) {
+      if (marking === 'amdal.feasibility-returned') {
+        this.$alert('Menu <b> Dokumen UKL UPL </b> Terkunci, Silahkan Klik Tombol <b> Workspace UKL UPL </b>', 'Peringatan', {
+          confirmButtonText: 'Confirm',
+          center: true,
+          dangerouslyUseHTMLString: true,
+        });
+      } else {
+        this.$router.push({
+          path: `/amdal/${project.id}/dokumen-andal-rkl-rpl`,
+        });
+      }
     },
     handleDokumenUklUpl(project, marking) {
       if (marking === 'uklupl-mt.returned-examination') {
@@ -1422,8 +1438,8 @@ export default {
         }
       );
     },
-    handleAndal(project, perbaikan) {
-      if (perbaikan === true) {
+    handleAndal(project, isAndal) {
+      if (isAndal === true) {
         this.$alert('Menu <b> ANDAL </b> Terkunci, Silahkan Klik Tombol <b> Workspace ANDAL </b> Untuk Melakukan Perbaikan Pada Menu ini.', 'Peringatan', {
           confirmButtonText: 'Confirm',
           center: true,
@@ -1456,7 +1472,7 @@ export default {
     },
     handleRklRpl(project, perbaikan) {
       if (perbaikan === true) {
-        this.$alert('Menu <b> ANDAL </b> Terkunci, Silahkan Klik Tombol <b> Workspace RKL RPL </b> Untuk Melakukan Perbaikan Pada Menu ini.', 'Peringatan', {
+        this.$alert('Menu <b> RKL RPL </b> Terkunci, Silahkan Klik Tombol <b> Workspace RKL RPL </b> Untuk Melakukan Perbaikan Pada Menu ini.', 'Peringatan', {
           confirmButtonText: 'Confirm',
           center: true,
           dangerouslyUseHTMLString: true,
@@ -1502,45 +1518,99 @@ export default {
         return { value: i.id, label: i.name };
       });
     },
-    handleWorkspaceKa(project) {
-      this.$router.push({
-        name: 'projectWorkspace',
-        params: {
-          id: project.id,
-          filename: `ka-${project.id}-${project.project_title.toLowerCase()}.docx`,
-          workspaceType: 'ka',
-        },
-      });
+    handleWorkspaceKa(project, marking) {
+      if (marking === 'amdal.feasibility-returned') {
+        this.$alert('Menu <b> workspace KA </b> Terkunci, Silahkan Klik Tombol <b> Workspace ANDAL / Workspace RKL - RPL </b>', 'Peringatan', {
+          confirmButtonText: 'Confirm',
+          center: true,
+          dangerouslyUseHTMLString: true,
+        });
+      } else {
+        this.$router.push({
+          name: 'projectWorkspace',
+          params: {
+            id: project.id,
+            filename: `ka-${project.id}-${project.project_title.toLowerCase()}.docx`,
+            workspaceType: 'ka',
+          },
+        });
+      }
     },
-    async handleWorkspaceAndal(idProject) {
-      await andalComposingResource.list({
-        docs: 'true',
-        idProject: idProject,
-      });
+    async handleWorkspaceAndal(idProject, isAndal) {
+      if (isAndal === true) {
+        // const that = this;
+        this.$alert('Silahkan Lakukan Perbaiki Pada Webform, anda akan dialihkan ke menu <b> ANDAL </b>', 'Peringatan', {
+          confirmButtonText: 'Confirm',
+          center: true,
+          dangerouslyUseHTMLString: true,
+        }).then(res => {
+          andalComposingResource.list({
+            docs: 'true',
+            idProject: idProject,
+          });
 
-      this.$router.push({
-        name: 'projectWorkspace',
-        params: {
-          id: idProject,
-          filename: `${idProject}-andal.docx`,
-          workspaceType: 'andal',
-        },
-      });
+          this.$router.push({
+            name: 'projectWorkspace',
+            params: {
+              id: idProject,
+              filename: `${idProject}-andal.docx`,
+              workspaceType: 'andal',
+            },
+          });
+        });
+      } else {
+        await andalComposingResource.list({
+          docs: 'true',
+          idProject: idProject,
+        });
+
+        this.$router.push({
+          name: 'projectWorkspace',
+          params: {
+            id: idProject,
+            filename: `${idProject}-andal.docx`,
+            workspaceType: 'andal',
+          },
+        });
+      }
     },
-    async handleWorkspaceRKLRPL(idProject) {
-      await rklResource.list({
-        docs: 'true',
-        idProject: idProject,
-      });
+    async handleWorkspaceRKLRPL(idProject, marking) {
+      if (marking === 'amdal.feasibility-returned') {
+        // const that = this;
+        this.$alert('Silahkan Lakukan Perbaiki Pada Webform, anda akan dialihkan ke menu <b> RKL RPL </b>', 'Peringatan', {
+          confirmButtonText: 'Confirm',
+          center: true,
+          dangerouslyUseHTMLString: true,
+        }).then(res => {
+          rklResource.list({
+            docs: 'true',
+            idProject: idProject,
+          });
 
-      this.$router.push({
-        name: 'projectWorkspace',
-        params: {
-          id: idProject,
-          filename: `${idProject}-rkl-rpl.docx`,
-          workspaceType: 'rkl-rpl',
-        },
-      });
+          this.$router.push({
+            name: 'projectWorkspace',
+            params: {
+              id: idProject,
+              filename: `${idProject}-rkl-rpl.docx`,
+              workspaceType: 'rkl-rpl',
+            },
+          });
+        });
+      } else {
+        await rklResource.list({
+          docs: 'true',
+          idProject: idProject,
+        });
+
+        this.$router.push({
+          name: 'projectWorkspace',
+          params: {
+            id: idProject,
+            filename: `${idProject}-rkl-rpl.docx`,
+            workspaceType: 'rkl-rpl',
+          },
+        });
+      }
     },
     async handleWorkspaceUKLUPL(idProject, marking) {
       if (marking === 'uklupl-mt.returned-examination') {
