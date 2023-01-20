@@ -1,9 +1,31 @@
 <template>
   <div>
     <div style="text-align: right; margin-bottom: 10px">
-      <el-button :loading="loadingWorkspace" type="primary" @click="checkData">
+      <el-button
+        v-if="isPerbaikan"
+        class="pull-right"
+        type="danger"
+        size="small"
+        icon="el-icon-close"
+        style="margin-left: .5rem;"
+        @click="handleNotSave()"
+      >
+        Tidak
+      </el-button>
+      <el-button v-if="!isPerbaikan" :loading="loadingWorkspace" type="primary" @click="checkData">
         WORKSPACE
       </el-button>
+      <el-button
+        v-if="isPerbaikan"
+        class="pull-right"
+        type="success"
+        size="small"
+        icon="el-icon-check"
+        @click="checkData(isPerbaikan)"
+      >
+        Ya
+      </el-button>
+      <span v-if="isPerbaikan" class="pull-right" style="font-weight: bold; margin-top: .5rem;">Apakah Ada Perbaikan pada ANDAL ini?</span>
     </div>
     <el-collapse v-model="activeName" :accordion="true">
       <el-collapse-item name="pelingkupan">
@@ -125,15 +147,50 @@ export default {
       loadingWorkspace: false,
     };
   },
+  computed: {
+    isPerbaikan() {
+      return this.$route.query.perbaikan;
+    },
+  },
   methods: {
-    async checkData() {
+    async checkData(perbaikan) {
       this.loadingWorkspace = true;
       const andalData = await andalComposingResource.list({
         checkWorkspace: 'true',
         idProject: this.$route.params.id,
       });
       if (andalData) {
-        this.getData();
+        if (perbaikan) {
+          this.$confirm(
+            'Pastikan data perbaikan anda sudah terisi semua pada <b> ANDAL </b>. Apakah anda yakin akan melanjutkan ke <b> Workspace ANDAL </b> ?',
+            'Peringatan',
+            {
+              confirmButtonText: 'OK',
+              cancelButtonText: 'Batal',
+              type: 'warning',
+              dangerouslyUseHTMLString: true,
+            }).then(() => {
+            andalComposingResource.list({
+              docs: 'true',
+              idProject: this.$route.params.id,
+            });
+
+            this.$router.push({
+              name: 'projectWorkspace',
+              params: {
+                id: this.$route.params.id,
+                filename: `${this.$route.params.id}-andal.docx`,
+                workspaceType: 'andal',
+              },
+              query: {
+                perbaikan: true,
+                isFixAndal: true,
+              },
+            });
+          });
+        } else {
+          this.getData();
+        }
       } else {
         this.$alert(
           'Silahkan Mengisi Data Analisa Dampak Lingkungan Terlebih Dahulu',
@@ -143,6 +200,35 @@ export default {
         );
         this.loadingWorkspace = false;
       }
+    },
+    async handleNotSave() {
+      this.$confirm(
+        'Apakah anda yakin tidak ada perbaikan di <b> ANDAL </b> ini dan akan melanjutkan ke <b> Workspace ANDAL </b> ?',
+        'Peringatan',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Batal',
+          type: 'warning',
+          dangerouslyUseHTMLString: true,
+        }).then(() => {
+        andalComposingResource.list({
+          docs: 'true',
+          idProject: this.$route.params.id,
+        });
+
+        this.$router.push({
+          name: 'projectWorkspace',
+          params: {
+            id: this.$route.params.id,
+            filename: `${this.$route.params.id}-andal.docx`,
+            workspaceType: 'andal',
+          },
+          query: {
+            perbaikan: true,
+            isFixAndal: false,
+          },
+        });
+      });
     },
     async getData() {
       await andalComposingResource.list({

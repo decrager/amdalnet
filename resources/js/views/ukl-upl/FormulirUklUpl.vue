@@ -147,7 +147,6 @@ export default {
           params: this.idProject,
         });
       } else {
-        console.log('gun');
         this.isProjectUklUpl = true;
       }
     },

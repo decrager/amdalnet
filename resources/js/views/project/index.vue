@@ -1118,7 +1118,7 @@ export default {
     },
     handleKerangkaAcuan(project, marking) {
       if (marking === 'amdal.feasibility-returned') {
-        this.$alert('Menu <b> Formulir Kerangka Acuan</b> Terkunci, Silahkan Klik Tombol <b> Workspace ANDAL / Workspace RKL RPL </b>', 'Peringatan', {
+        this.$alert('Menu <b> Formulir Kerangka Acuan </b> Terkunci, Silahkan Klik Tombol <b> Workspace ANDAL </b> Untuk Melakukan Perbaikan Pada Menu ini.', 'Peringatan', {
           confirmButtonText: 'Confirm',
           center: true,
           dangerouslyUseHTMLString: true,
@@ -1150,7 +1150,7 @@ export default {
     },
     handleDokumenAndalRklRpl(project, marking) {
       if (marking === 'amdal.feasibility-returned') {
-        this.$alert('Menu <b> Dokumen UKL UPL </b> Terkunci, Silahkan Klik Tombol <b> Workspace UKL UPL </b>', 'Peringatan', {
+        this.$alert('Menu <b> Dokumen ANDAL RKL RPL</b> Terkunci, Silahkan Klik Tombol <b> Workspace ANDAL / RKL RPL </b>', 'Peringatan', {
           confirmButtonText: 'Confirm',
           center: true,
           dangerouslyUseHTMLString: true,
@@ -1520,7 +1520,7 @@ export default {
     },
     handleWorkspaceKa(project, marking) {
       if (marking === 'amdal.feasibility-returned') {
-        this.$alert('Menu <b> workspace KA </b> Terkunci, Silahkan Klik Tombol <b> Workspace ANDAL / Workspace RKL - RPL </b>', 'Peringatan', {
+        this.$alert('Menu <b> Workspace KA </b> Terkunci, Silahkan Klik Tombol <b> Workspace ANDAL </b> Untuk Melakukan Perbaikan Pada Menu ibi.', 'Peringatan', {
           confirmButtonText: 'Confirm',
           center: true,
           dangerouslyUseHTMLString: true,
@@ -1536,25 +1536,18 @@ export default {
         });
       }
     },
-    async handleWorkspaceAndal(idProject, isAndal) {
-      if (isAndal === true) {
+    async handleWorkspaceAndal(idProject, marking) {
+      if (marking === 'amdal.feasibility-returned') {
         // const that = this;
         this.$alert('Silahkan Lakukan Perbaiki Pada Webform, anda akan dialihkan ke menu <b> ANDAL </b>', 'Peringatan', {
           confirmButtonText: 'Confirm',
           center: true,
           dangerouslyUseHTMLString: true,
         }).then(res => {
-          andalComposingResource.list({
-            docs: 'true',
-            idProject: idProject,
-          });
-
           this.$router.push({
-            name: 'projectWorkspace',
-            params: {
-              id: idProject,
-              filename: `${idProject}-andal.docx`,
-              workspaceType: 'andal',
+            path: `/amdal/${idProject}/penyusunan-andal`,
+            query: {
+              perbaikan: true,
             },
           });
         });
@@ -1582,18 +1575,8 @@ export default {
           center: true,
           dangerouslyUseHTMLString: true,
         }).then(res => {
-          rklResource.list({
-            docs: 'true',
-            idProject: idProject,
-          });
-
           this.$router.push({
-            name: 'projectWorkspace',
-            params: {
-              id: idProject,
-              filename: `${idProject}-rkl-rpl.docx`,
-              workspaceType: 'rkl-rpl',
-            },
+            path: `/amdal/${idProject}/penyusunan-rkl-rpl`,
           });
         });
       } else {
