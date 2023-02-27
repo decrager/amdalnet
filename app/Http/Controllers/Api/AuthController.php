@@ -43,10 +43,10 @@ class AuthController extends BaseController
      */
     public function login(Request $request)
     {
-        $credentials = $request->only('email', 'password');
+        $credentials = $request->only('password');
+        $credentials['email'] = strtolower($request['email']);
         // $credentials["active"]=1;
         // $credentials=>active = 1;
-
         // return $credentials;
         $actives = User::where('email', '=', $credentials['email'])->first();
 
