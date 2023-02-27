@@ -16,7 +16,7 @@
         >
           {{ 'Tambah Penyusun' }}
         </el-button>
-        <el-button
+        <!-- <el-button
           v-if="
             !updateCertificate &&
             (checkPermission(['manage formulator']) || checkRole(['admin']))
@@ -26,7 +26,7 @@
           @click="handleUpdateCertificate"
         >
           {{ 'Update Sertifikasi' }}
-        </el-button>
+        </el-button> -->
         <el-row v-if="!updateCertificate" :gutter="32">
           <el-col :sm="24" :md="10">
             <el-input
@@ -66,26 +66,6 @@
         type="card"
         @tab-click="handleClickTab"
       >
-        <el-tab-pane label="Penyusun Aktif" name="penyusunAktif">
-          <formulator-table
-            :loading="loading"
-            :list="list"
-            @lspFilter="onLspFilter"
-            @membershipStatusFilter="onMembershipStatusFilter"
-            @handleEditForm="handleEditForm($event)"
-            @handleDelete="handleDelete($event)"
-          />
-        </el-tab-pane>
-        <el-tab-pane label="Penyusun Tidak Aktif" name="penyusunTidakAktif">
-          <formulator-table
-            :loading="loading"
-            :list="list"
-            @lspFilter="onLspFilter"
-            @membershipStatusFilter="onMembershipStatusFilter"
-            @handleEditForm="handleEditForm($event)"
-            @handleDelete="handleDelete($event)"
-          />
-        </el-tab-pane>
         <el-tab-pane
           label="Penyusun Bersertifikat"
           name="penyusunBersertifikat"
@@ -93,6 +73,35 @@
           <formulator-table
             :loading="loading"
             :list="list"
+            @emailStatusFilter="onEmailStatusFilter"
+            @lspFilter="onLspFilter"
+            @membershipStatusFilter="onMembershipStatusFilter"
+            @handleEditForm="handleEditForm($event)"
+            @handleDelete="handleDelete($event)"
+          />
+        </el-tab-pane>
+        <el-tab-pane
+          label="Penyusun Tenaga Ahli"
+          name="penyusunTidakBersertifikat"
+        >
+          <formulator-table
+            :loading="loading"
+            :list="list"
+            @emailStatusFilter="onEmailStatusFilter"
+            @lspFilter="onLspFilter"
+            @membershipStatusFilter="onMembershipStatusFilter"
+            @handleEditForm="handleEditForm($event)"
+            @handleDelete="handleDelete($event)"
+          />
+        </el-tab-pane>
+        <el-tab-pane
+          label="Semua Penyusun"
+          name="semua"
+        >
+          <formulator-table
+            :loading="loading"
+            :list="list"
+            @emailStatusFilter="onEmailStatusFilter"
             @lspFilter="onLspFilter"
             @membershipStatusFilter="onMembershipStatusFilter"
             @handleEditForm="handleEditForm($event)"
@@ -105,6 +114,7 @@
         :loading="loading"
         :list="list"
         :certificate="true"
+        @emailStatusFilter="onEmailStatusFilter"
         @lspFilter="onLspFilter"
         @membershipStatusFilter="onMembershipStatusFilter"
         @handleEditForm="handleEditForm($event)"
@@ -144,11 +154,11 @@ export default {
     return {
       list: [],
       loading: true,
-      activeName: 'penyusunAktif',
+      activeName: 'penyusunBersertifikat',
       listQuery: {
         page: 1,
         limit: 10,
-        active: 'aktif',
+        active: 'bersertifikat',
         search: null,
         email: this.$store.getters.user.email,
       },
@@ -170,12 +180,10 @@ export default {
       this.listQuery.page = 1;
       this.listQuery.limit = 10;
       this.listQuery.search = null;
-      if (tab.name === 'penyusunAktif') {
-        this.listQuery.active = 'aktif';
-      } else if (tab.name === 'penyusunTidakAktif') {
-        this.listQuery.active = 'nonaktif';
-      } else if (tab.name === 'penyusunBersertifikat') {
+      if (tab.name === 'penyusunBersertifikat') {
         this.listQuery.active = 'bersertifikat';
+      } else if (tab.name === 'penyusunTidakBersertifikat') {
+        this.listQuery.active = 'tidakBersertifikat';
       } else {
         this.listQuery.active = '';
       }
@@ -211,8 +219,8 @@ export default {
     },
     cancelUpdateCertificate() {
       this.updateCertificate = false;
-      this.activeName = 'penyusunAktif';
-      this.listQuery.active = 'aktif';
+      this.activeName = 'penyusunBersertifikat';
+      this.listQuery.active = 'bersertifikat';
       this.listQuery.search = null;
       this.getList();
     },
@@ -309,6 +317,10 @@ export default {
     onLspFilter(val) {
       // console.log('membershipStatusIndex: ', val);
       this.listQuery.lspFilter = val;
+      this.handleFilter();
+    },
+    onEmailStatusFilter(val) {
+      this.listQuery.emailStatusFilter = val;
       this.handleFilter();
     },
   },

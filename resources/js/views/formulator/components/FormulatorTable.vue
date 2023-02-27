@@ -7,19 +7,37 @@
     highlight-current-row
     :header-cell-style="{ background: '#3AB06F', color: 'white' }"
   >
-    <el-table-column align="center" label="Nama" prop="name" sortable />
+
+<!-- KOLOM NAMA -->
+    <el-table-column
+      align="center"
+      label="Nama"
+      prop="name"
+      sortable
+    />
+
+<!-- KOLOM NO REGISTRASI -->
     <el-table-column
       align="center"
       label="No. Registrasi"
       prop="reg_no"
     />
+
+<!-- KOLOM NO SERTIFIKAT -->
     <el-table-column
       align="center"
       label="No. Sertifikat"
       prop="cert_no"
       sortable
     />
-    <el-table-column align="center" prop="membership_status" column-key="membership_status">
+
+<!-- KOLOM SERTIFIKASI -->
+    <el-table-column
+      align="center"
+      width="144px"
+      prop="membership_status"
+      column-key="membership_status"
+    >
       <template slot="header">
         <el-select
           v-model="membershipStatusFilter "
@@ -37,6 +55,8 @@
         </el-select>
       </template>
     </el-table-column>
+
+<!-- KOLOM LSP -->
     <el-table-column v-if="checkRole(['admin'])" align="center" prop="data_lsp.lsp_name" column-key="data_lsp.lsp_name">
       <template slot="header">
         <el-select
@@ -55,7 +75,14 @@
         </el-select>
       </template>
     </el-table-column>
-    <el-table-column align="center" label="Status" prop="status" sortable>
+
+<!-- KOLOM STATUS SERTIFIKAT -->
+    <el-table-column
+      align="center"
+      label="Status Sertifikat"
+      prop="status"
+      width="144px"
+    >
       <template slot-scope="scope">
         <el-tag :type="scope.row.status | statusFilter">
           {{ scope.row.status }}
@@ -63,7 +90,51 @@
       </template>
     </el-table-column>
 
-    <el-table-column label="File">
+<!-- KOLOM STATUS AKUN -->
+    <el-table-column
+      width="144px"
+      align="center"
+      label="Status Akun"
+    >
+      <template slot-scope="scope">
+        <span v-if="scope.row.user && scope.row.user.email">Terdaftar</span>
+        <span v-else>Tidak Terdaftar</span>
+      </template>
+
+      <!-- <template slot="header">
+        <el-select
+          v-model="emailStatusFilter"
+          class="filter-header"
+          clearable
+          placeholder="Status Akun"
+          @change="onEmailStatusFilter"
+        >
+          <el-option
+            v-for="item in emailStatusFilterOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </template> -->
+
+    </el-table-column>
+
+<!-- KOLOM AKUN -->
+    <el-table-column
+      width="144px"
+      align="center"
+      label="Akun"
+    >
+    <template slot-scope="scope">
+      <span v-if="scope.row.user && scope.row.user.active === 1">Aktif</span>
+      <span v-else-if="scope.row.user && scope.row.user.active === 0">Tidak Aktif</span>
+      <span v-else>Tidak Aktif</span>
+    </template>
+    </el-table-column>
+
+<!-- KOLOM FILE -->
+    <el-table-column width="144px" label="File">
       <template slot-scope="scope">
         <el-button
           v-if="scope.row.cert_file"
@@ -85,20 +156,10 @@
         >
           CV
         </el-button>
-        <el-button
-          v-if="
-            certificate &&
-            (checkPermission(['manage formulator']) || checkRole(['admin']))
-          "
-          type="warning"
-          size="mini"
-          @click="handleCertificate(scope.row.id)"
-        >
-          Update
-        </el-button>
       </template>
     </el-table-column>
 
+<!-- KOLOM AKSI -->
     <el-table-column
       v-if="
         !certificate &&
@@ -109,12 +170,22 @@
     >
       <template slot-scope="scope">
         <el-button
-          type="text"
+          v-if="!scope.row.user || scope.row.user.active === 0"
+          type="danger"
+          size="mini"
           href="#"
           icon="el-icon-delete"
           @click="handleDelete(scope.row.id, scope.row.name)"
         >
           Hapus
+        </el-button>
+        <el-button
+          type="warning"
+          size="mini"
+          href="#"
+          @click="handleUpdateCertificate(scope.row.id, scope.row.name)"
+        >
+          Update
         </el-button>
       </template>
     </el-table-column>
@@ -143,16 +214,33 @@ export default {
       type: Array,
       default: () => [],
     },
+    emailStatusFilterOptions: {
+      type: Array,
+      default: () => [
+        {
+          value: !'',
+          label: 'Terdaftar',
+        },
+        {
+          value: '',
+          label: 'Tidak Terdaftar',
+        },
+      ],
+    },
     options: {
       type: Array,
       default: () => [
+        {
+          value: 'KTPA',
+          label: 'KTPA',
+        },
         {
           value: 'ATPA',
           label: 'ATPA',
         },
         {
-          value: 'KTPA',
-          label: 'KTPA',
+          value: 'TA',
+          label: 'Tenaga Ahli',
         },
       ],
     },
@@ -165,6 +253,7 @@ export default {
       lspOptions: [],
       membershipStatusFilter: '',
       lspFilter: '',
+      emailStatusFilter: '',
     };
   },
   mounted() {
@@ -201,6 +290,10 @@ export default {
     onLspFilter(val) {
       // console.log('membershipStatus: ', val);
       this.$emit('lspFilter', val);
+    },
+    onEmailStatusFilter(val) {
+      // console.log('membershipStatus: ', val);
+      this.$emit('emailStatusFilter', val);
     },
   },
 };
