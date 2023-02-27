@@ -18,7 +18,7 @@ class AppServiceProvider extends ServiceProvider
         // $this->app->bind('Storage',function($app){
         //     return new Storage($app);
         // });
-        if ($this->app->environment('development')) {
+        if (config('telescope.enabled')) {
             $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
             $this->app->register(TelescopeServiceProvider::class);
         }
