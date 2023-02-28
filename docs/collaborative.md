@@ -56,6 +56,7 @@ sudo docker run -i -t -d -p 9000:80 --restart=always --name oods \
     -e JWT_SECRET=LIo3a2QLrCQ7BPi8ET09 \
     -v /home/ubuntu/office/DocumentServer/data:/var/www/onlyoffice/Data \
     -v /home/ubuntu/office/DocumentServer/logs:/var/log/onlyoffice \
+    -v /home/ubuntu/office/DocumentServer/etc/default.json:/etc/onlyoffice/documentserver/default.json \
     onlyoffice/documentserver:7.2
 ```
 
