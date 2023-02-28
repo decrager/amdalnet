@@ -183,7 +183,7 @@
           type="warning"
           size="mini"
           href="#"
-          @click="handleUpdateCertificate(scope.row.id, scope.row.name)"
+          @click="handleCertificate(scope.row.id, scope.row.name)"
         >
           Update
         </el-button>
