@@ -8,6 +8,7 @@ namespace App\Services;
 use App\Entity\Initiator;
 use App\Entity\OssNib;
 use App\Entity\Project;
+use App\Entity\ProjectPkplhFinal;
 use App\Entity\ProjectSkkl;
 use App\Entity\ProjectSkklFinal;
 use App\Entity\SubProject;
@@ -33,6 +34,7 @@ class OssService
         $idIzin = $ossNib->id_izin;
         $dataChecklist = $jsonContent['data_checklist'];
         $dataSkkl = ProjectSkklFinal::where('id_project', $request->idProject)->first();
+        $dataPkplh = ProjectPkplhFinal::where('id_project', $request->idProject)->first();
 
         foreach ($subProjects as $dataProject) {
             $dataProduct = null;
@@ -71,8 +73,8 @@ class OssService
                         'kd_daerah' => $ossNib->kd_daerah,
                         // 'kewenangan' => $ossNib->kewenangan,
                         'kewenangan' => $authorityNew,
-                        'nomor_izin' => $dataSkkl->number, // NIP pemroses (TUK) ? Need confirm // di-isi sk
-                        'tgl_terbit_izin' => (string)$dataSkkl->date_published->format('Y-m-d'),  // nambah kolom di tabel amdalnet // di-isi tgl skkl
+                        'nomor_izin' => $dataSkkl ? $dataSkkl->number : $dataPkplh->number, // NIP pemroses (TUK) ? Need confirm // di-isi sk
+                        'tgl_terbit_izin' => $dataSkkl ? (string)$dataSkkl->date_published->format('Y-m-d') : (string)$dataPkplh->date_published->format('Y-m-d'),  // nambah kolom di tabel amdalnet // di-isi tgl skkl
                         'tgl_berlaku_izin' => (string)$project->updated_at,
                         'nama_ttd' => "", // nambah kolom di tabel amdalnet
                         'nip_ttd' => "", // nambah kolom di tabel amdalnet
