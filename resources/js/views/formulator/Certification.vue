@@ -125,16 +125,6 @@
           style="margin-top: 40px; padding-left: 16px; padding-right: 16px"
         >
           <el-col :sm="24" :md="12">
-            <el-form-item label="No Registrasi" prop="regNo">
-              <el-input v-model="formulator.reg_no" name="regNo" />
-            </el-form-item>
-          </el-col>
-          <el-col :sm="24" :md="12">
-            <el-form-item label="No Sertifikat" prop="certNo">
-              <el-input v-model="formulator.cert_no" name="certNo" />
-            </el-form-item>
-          </el-col>
-          <el-col :sm="24" :md="12">
             <el-form-item label="Sertifikasi" prop="membership_status">
               <el-select
                 v-model="formulator.membership_status"
@@ -149,6 +139,39 @@
                   :value="item.value"
                 />
               </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col v-if="checkRole(['admin'])" :sm="24" :md="12">
+            <el-form-item label="Nama LSP" porp="id_lsp">
+              <el-select
+                v-model="formulator.id_lsp"
+                name="id_lsp"
+                placeholder="Pilih"
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="item in lspOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row
+          v-if="formulator.membership_status !== 'TA'"
+          :gutter="32"
+          style="margin-top: 40px; padding-left: 16px; padding-right: 16px"
+        >
+          <el-col :sm="24" :md="12">
+            <el-form-item label="No Registrasi" prop="regNo">
+              <el-input v-model="formulator.reg_no" name="regNo" />
+            </el-form-item>
+          </el-col>
+          <el-col :sm="24" :md="12">
+            <el-form-item label="No Sertifikat" prop="certNo">
+              <el-input v-model="formulator.cert_no" name="certNo" />
             </el-form-item>
           </el-col>
           <el-col :sm="24" :md="12">
@@ -215,23 +238,6 @@
                 name="otherExpertise"
                 placeholder="Isi Keahlian"
               />
-            </el-form-item>
-          </el-col>
-          <el-col v-if="checkRole(['admin'])" :sm="24" :md="12">
-            <el-form-item label="Nama LSP" porp="id_lsp">
-              <el-select
-                v-model="formulator.id_lsp"
-                name="id_lsp"
-                placeholder="Pilih"
-                style="width: 100%"
-              >
-                <el-option
-                  v-for="item in lspOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -303,6 +309,13 @@ export default {
         callback();
       }
     };
+    const validateDate = (rule, value, callback) => {
+      if (!this.formulator.date_start) {
+        callback(new Error('TANGGAL WAJIB DIISI WOY'));
+      } else {
+        callback();
+      }
+    };
 
     return {
       loading: false,
@@ -322,6 +335,10 @@ export default {
         {
           value: 'ATPA',
           label: 'Anggota Tim Penyusun Amdal (ATPA)',
+        },
+        {
+          value: 'TA',
+          label: 'Tenaga Ahli (TA)',
         },
       ],
       expertise: [
@@ -397,7 +414,7 @@ export default {
           {
             required: true,
             trigger: 'blur',
-            message: 'Tanggal Berlaku Wajib Dipilih',
+            validator: validateDate,
           },
         ],
         membership_status: [
@@ -427,10 +444,18 @@ export default {
   created() {
     this.getData();
     this.getLsp();
+    this.getIdLsp();
     this.getProvinces();
   },
   methods: {
     checkRole,
+    async getIdLsp() {
+      const { data } = await lspResource.list({
+        email: this.$store.getters.roles[0] === 'lsp' ? this.$store.getters.user.email : null,
+        byUserEmail: 'true',
+      });
+      this.formulator.id_lsp = data[0].id;
+    },
     async getLsp() {
       const { data } = await lspResource.list({
         options: 'true',
@@ -485,6 +510,10 @@ export default {
         this.selectedExpertise = 'Ahli Lainnya';
       } else {
         this.formulator.expertise = null;
+      }
+
+      if (this.formulator.membership_status === 'TA') {
+        this.formulator.date_start = '2000-12-12';
       }
 
       // === SET FILE TO NULL === //
@@ -543,14 +572,14 @@ export default {
           duration: 5 * 1000,
         });
         this.$router.push({ name: 'formulator' });
-      } else if (response.error_reg_no) {
+      } else if (response.error_reg_no && this.formulator.membership_status !== 'TA') {
         this.$message({
           message: 'No Registrasi Sudah Terdaftar',
           type: 'error',
           duration: 5 * 1000,
         });
         this.loadingSubmit = false;
-      } else if (response.error_cert_no) {
+      } else if (response.error_cert_no && this.formulator.membership_status !== 'TA') {
         this.$message({
           message: 'No Sertifikat Sudah Terdaftar',
           type: 'error',

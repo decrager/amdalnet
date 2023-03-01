@@ -81,7 +81,8 @@
       align="center"
       label="Status Sertifikat"
       prop="status"
-      width="144px"
+      width="170"
+      sortable
     >
       <template slot-scope="scope">
         <el-tag :type="scope.row.status | statusFilter">
@@ -95,6 +96,7 @@
       width="144px"
       align="center"
       label="Status Akun"
+      sortable
     >
       <template slot-scope="scope">
         <span v-if="scope.row.user && scope.row.user.email">Terdaftar</span>
@@ -125,6 +127,7 @@
       width="144px"
       align="center"
       label="Akun"
+      sortable
     >
     <template slot-scope="scope">
       <span v-if="scope.row.user && scope.row.user.active === 1">Aktif</span>
@@ -167,6 +170,7 @@
       "
       align="center"
       label="Aksi"
+      width="200"
     >
       <template slot-scope="scope">
         <el-button
