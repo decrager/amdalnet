@@ -2491,7 +2491,6 @@ class AndalComposingController extends Controller
                 }
             // }
         }
-        dd($type);
         $fomulator_team = FormulatorTeam::where('id_project', $project->id)->first();
         $fomulator_team_member = FormulatorTeamMember::where('id_formulator_team', $fomulator_team->id)->orderBy('position', 'desc')->get();
         $penyusun = [];

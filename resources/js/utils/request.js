@@ -41,13 +41,30 @@ service.interceptors.response.use(
     // } else if (error.response.data && error.response.data.error) {
     //   message = error.response.data.error;
     // }
-
-    Message({
-      // message: message,
-      message: 'Terjadi Kesalahan Dalam System, Silahkan Hubungi Administrator',
-      type: 'error',
-      duration: 5 * 1000,
-    });
+    if (error.response.data.message === 'Unauthenticated.') {
+      Message({
+        // message: message,
+        message: 'Sesi anda telah habis, Silahkan login ulang.',
+        // message: error.response.data.message,
+        type: 'error',
+        duration: 10 * 1000,
+      });
+    } else if (error.response.data.message === 'CSRF token mismatch.') {
+      Message({
+        // message: message,
+        message: 'Sesi anda telah habis, Silahkan refresh halaman.',
+        // message: error.response.data.message,
+        type: 'error',
+        duration: 10 * 1000,
+      });
+    } else {
+      Message({
+        // message: message,
+        message: 'Terjadi Kesalahan Dalam System, Silahkan Hubungi Administrator',
+        type: 'error',
+        duration: 5 * 1000,
+      });
+    }
     return Promise.reject(error);
   }
 );

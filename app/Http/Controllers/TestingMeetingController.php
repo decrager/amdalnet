@@ -128,6 +128,11 @@ class TestingMeetingController extends Controller
                                 'password' => Hash::make($password),
                                 'original_password' => $password
                             ]);
+                            $email_user[] = [
+                                'email' => $i->email,
+                                'password' => $password,
+                                'id' => $user->id,
+                            ];
                             $user->syncRoles($role);
 
                             $invite = TestingMeetingInvitation::find($i->id);
@@ -137,9 +142,9 @@ class TestingMeetingController extends Controller
                             }
                         } else {
                             $user = User::where('email', strtolower($i->email))->first();
+                            $email_user[] = $user->email;
                         }
 
-                        $email_user[] = $i->email;
                     }
                 }
             }
@@ -157,35 +162,36 @@ class TestingMeetingController extends Controller
             }
 
             if(count($email_user) > 0) {
-                $user = User::whereIn('email', $email_user)->get();
+                foreach ($email_user as $users) {
+                    $user = User::where('email', $users === null ? $users['email'] : $users)->first();
 
-                if($user->count() > 0) {
-                    // === UPDATE STATUS INVITATION === //
-                    $meeting->is_invitation_sent = true;
-                    $meeting->save();
+                    if($user->count() > 0) {
+                        // === UPDATE STATUS INVITATION === //
+                        $meeting->is_invitation_sent = true;
+                        $meeting->save();
 
-                    $tmpName = tempnam(sys_get_temp_dir(),'');
-                    $document_attachment =  DocumentAttachment::where('id_project', $project->id)->where('type', $meeting->document_type == 'ka' ? 'Formulir KA' : 'Formulir KA Andal')->first();
-                    $pdf_url = $this->docxToPdf($document_attachment->attachment);
-                    $filename = 'ka-andal-' . strtolower(str_replace('/', '-', $project->project_title));
-                    if($meeting->document_type == 'ka') {
-                        $filename = 'ka-' . $project->id . '-' . strtolower(str_replace('/', '-', $project->project_title)) ;
+                        $tmpName = tempnam(sys_get_temp_dir(),'');
+                        $document_attachment =  DocumentAttachment::where('id_project', $project->id)->where('type', $meeting->document_type == 'ka' ? 'Formulir KA' : 'Formulir KA Andal')->first();
+                        $pdf_url = $this->docxToPdf($document_attachment->attachment);
+                        $filename = 'ka-andal-' . strtolower(str_replace('/', '-', $project->project_title));
+                        if($meeting->document_type == 'ka') {
+                            $filename = 'ka-' . $project->id . '-' . strtolower(str_replace('/', '-', $project->project_title)) ;
+                        }
+                        $tmpFile = Storage::disk('public')->get($meeting->rawInvitationFile());
+                        file_put_contents($tmpName, $tmpFile);
+                        Notification::send($user, new MeetingInvitation($meeting, $request->idProject, $tmpName, $pdf_url, $filename, $request->role, $users));
+
+                        unlink($tmpName);
+
+                        // === WORKFLOW === //
+                        if($project->marking == 'amdal.form-ka-examination-invitation-drafting') {
+                            $project->workflow_apply('send-amdal-form-ka-examination-invitation');
+                            $project->workflow_apply('examine-amdal-form-ka');
+                            $project->save();
+                        }
                     }
-                    $tmpFile = Storage::disk('public')->get($meeting->rawInvitationFile());
-                    file_put_contents($tmpName, $tmpFile);
-                    Notification::send($user, new MeetingInvitation($meeting, $request->idProject, $tmpName, $pdf_url, $filename, $request->role));
-
-                    unlink($tmpName);
-
-                    // === WORKFLOW === //
-                    if($project->marking == 'amdal.form-ka-examination-invitation-drafting') {
-                        $project->workflow_apply('send-amdal-form-ka-examination-invitation');
-                        $project->workflow_apply('examine-amdal-form-ka');
-                        $project->save();
-                    }
-
-                    return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
                 }
+                return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
 
             }
 

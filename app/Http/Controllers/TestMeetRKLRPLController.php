@@ -133,6 +133,11 @@ class TestMeetRKLRPLController extends Controller
                                 'password' => Hash::make($password),
                                 'original_password' => $password
                             ]);
+                            $email_user[] = [
+                                'email' => $i->email,
+                                'password' => $password,
+                                'id' => $user->id,
+                            ];
                             $user->syncRoles($role);
 
                             $invite = TestingMeetingInvitation::find($i->id);
@@ -142,9 +147,8 @@ class TestMeetRKLRPLController extends Controller
                             }
                         } else {
                             $user = User::where('email', strtolower($i->email))->first();
+                            $email_user[] = $user->email;
                         }
-
-                        $email_user[] = $i->email;
                     }
                 }
             }
@@ -160,47 +164,46 @@ class TestMeetRKLRPLController extends Controller
                     $email_user[] = $ftm->formulator->email;
                 }
             }
-
             if(count($email_user) > 0) {
-                $user = User::whereIn('email', $email_user)->get();
+                foreach ($email_user as $users) {
+                    $user = User::where('email', $users === null ? $users['email'] : $users)->first();
+                    if($user->count() > 0) {
+                        // === UPDATE STATUS INVITATION === //
+                        $meeting->is_invitation_sent = true;
+                        $meeting->save();
 
-                if($user->count() > 0) {
-                    // === UPDATE STATUS INVITATION === //
-                    $meeting->is_invitation_sent = true;
-                    $meeting->save();
+                        $document_attachment =  DocumentAttachment::where('id_project', $project->id)->first();
+                        $pdf_url = $this->docxToPdf($document_attachment->attachment);
+                        $filename = 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title));
+                        if ($meeting->document_type == 'rkl-rpl') {
+                            $filename = [
+                                'rkl' => 'rkl-rpl-' . strtolower(str_replace('/', '-', $project->project_title)),
+                                'andal' => 'andal-' . strtolower(str_replace('/', '-', $project->project_title))
+                            ];
+                            $pdf_url = [
+                                'rkl' => $this->docxToPdf(DocumentAttachment::where('id_project', $project->id)->where('type', 'Dokumen RKL RPL')->first()->attachment),
+                                'andal' => $this->docxToPdf(DocumentAttachment::where('id_project', $project->id)->where('type', 'Dokumen Andal')->first()->attachment)
+                            ];
+                        }
+                        $tmpName = tempnam(sys_get_temp_dir(),'');
+                        $tmpFile = Storage::disk('public')->get($meeting->rawInvitationFile());
+                        file_put_contents($tmpName, $tmpFile);
+                        Notification::send($user, new MeetingInvitation($meeting, $request->idProject, $tmpName, $pdf_url, $filename, $request->role, $users));
 
-                    $document_attachment =  DocumentAttachment::where('id_project', $project->id)->first();
-                    $pdf_url = $this->docxToPdf($document_attachment->attachment);
-                    $filename = 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title));
-                    if ($meeting->document_type == 'rkl-rpl') {
-                        $filename = [
-                            'rkl' => 'rkl-rpl-' . strtolower(str_replace('/', '-', $project->project_title)),
-                            'andal' => 'andal-' . strtolower(str_replace('/', '-', $project->project_title))
-                        ];
-                        $pdf_url = [
-                            'rkl' => $this->docxToPdf(DocumentAttachment::where('id_project', $project->id)->where('type', 'Dokumen RKL RPL')->first()->attachment),
-                            'andal' => $this->docxToPdf(DocumentAttachment::where('id_project', $project->id)->where('type', 'Dokumen Andal')->first()->attachment)
-                        ];
+                        unlink($tmpName);
+
+                        // === WORKFLOW === //
+                        if($project->marking == 'uklupl-mt.examination-invitation-drafting') {
+                            $project->workflow_apply('send-uklupl-examination-invitation');
+                            $project->workflow_apply('examine-uklupl');
+                            $project->save();
+                        } else if($project->marking == 'amdal.feasibility-invitation-drafting') {
+                            $project->workflow_apply('send-amdal-feasibility-invitation');
+                            $project->save();
+                        }
                     }
-                    $tmpName = tempnam(sys_get_temp_dir(),'');
-                    $tmpFile = Storage::disk('public')->get($meeting->rawInvitationFile());
-                    file_put_contents($tmpName, $tmpFile);
-                    Notification::send($user, new MeetingInvitation($meeting, $request->idProject, $tmpName, $pdf_url, $filename, $request->role));
-
-                    unlink($tmpName);
-
-                    // === WORKFLOW === //
-                    if($project->marking == 'uklupl-mt.examination-invitation-drafting') {
-                        $project->workflow_apply('send-uklupl-examination-invitation');
-                        $project->workflow_apply('examine-uklupl');
-                        $project->save();
-                    } else if($project->marking == 'amdal.feasibility-invitation-drafting') {
-                        $project->workflow_apply('send-amdal-feasibility-invitation');
-                        $project->save();
-                    }
-
-                    return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
                 }
+                return response()->json(['error' => 0, 'message', 'Notifikasi Sukses Terkirim']);
             }
 
             return response()->json(['error' => 1, 'message' => 'Kirim Notifikasi Gagal']);

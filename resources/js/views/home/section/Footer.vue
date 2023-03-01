@@ -30,7 +30,7 @@
           </ul>
           <div class="footer__contact">
             <p>
-              <i class="ri-phone-fill" /> (+62) 813-3999-0567
+              <i class="ri-whatsapp-fill" /> (+62) 813-3999-0567 <br> Layanan Chat Operator (09.00 - 15.00)
             </p>
             <p>
               <i class="ri-mail-fill" /> amdalnet@menlhk.go.id
@@ -40,9 +40,9 @@
             <a href="https://www.instagram.com/dit.pdluk/" target="_blank">
               <i class="ri-instagram-fill footer__social" />
             </a>
-            <a href="https://www.whatsapp.com/" target="_blank">
+            <!-- <a href="https://www.whatsapp.com/" target="_blank">
               <i class="ri-whatsapp-fill footer__social" />
-            </a>
+            </a> -->
             <a href="https://twitter.com/dit_pdluk" target="_blank">
               <i class="ri-twitter-fill footer__social" />
             </a>

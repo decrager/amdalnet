@@ -83,7 +83,9 @@ class FormulatorController extends Controller
             })
             ->where(function ($query) use ($request) {
                 $findIdLsp = Lsp::where('email',$request->email)->first();
-                return $findIdLsp ? $query->where('id_lsp', $findIdLsp->id) : '';
+                return $findIdLsp ? $query
+                    ->where('membership_status', '=', 'TA')
+                    ->orWhere('id_lsp', $findIdLsp->id) : '';
             })
             ->where(function ($query) use ($request) {
                 $findStatus = $request->membershipStatus;
