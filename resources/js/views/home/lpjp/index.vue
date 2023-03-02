@@ -53,7 +53,6 @@
           </el-table-column> -->
 
         </el-table>
-
         <div class="block" style="text-align: right">
           <pagination
             v-if="total > 0"
@@ -205,8 +204,8 @@ export default {
   padding: 0.5em;
 }
 .pagination-container {
-  background: #041608;
-  padding: 32px 16px;
+  background: #041608 !important;
+  padding: 32px 16px !important;
 }
 </style>
 
