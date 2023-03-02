@@ -350,3 +350,10 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.pagination-container {
+  background: #041608;
+  padding: 32px 16px;
+}
+</style>
