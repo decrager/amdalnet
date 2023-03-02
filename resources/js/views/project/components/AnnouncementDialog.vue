@@ -317,6 +317,7 @@ export default {
       this.$refs.announcement.validate(valid => {
         if (valid) {
           this.announcement.publish = false;
+          this.announcement.is_done = this.status;
           this.$emit('handleSubmitAnnouncement', this.fileProof);
         } else {
           console.log('error submit!!');
