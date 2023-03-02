@@ -572,14 +572,14 @@ export default {
           duration: 5 * 1000,
         });
         this.$router.push({ name: 'formulator' });
-      } else if (response.error_reg_no && this.formulator.membership_status !== 'TA') {
+      } else if (response.error_reg_no) {
         this.$message({
           message: 'No Registrasi Sudah Terdaftar',
           type: 'error',
           duration: 5 * 1000,
         });
         this.loadingSubmit = false;
-      } else if (response.error_cert_no && this.formulator.membership_status !== 'TA') {
+      } else if (response.error_cert_no) {
         this.$message({
           message: 'No Sertifikat Sudah Terdaftar',
           type: 'error',
@@ -593,6 +593,13 @@ export default {
           duration: 5 * 1000,
         });
         this.loadingSubmit = false;
+      } else {
+        this.$message({
+          type: 'success',
+          message: 'Penyusun Berhasil di Update',
+          duration: 5 * 1000,
+        });
+        this.$router.push({ name: 'formulator' });
       }
     },
     handleUploadAvatar(file) {
