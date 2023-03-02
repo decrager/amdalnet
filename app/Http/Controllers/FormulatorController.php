@@ -129,13 +129,17 @@ class FormulatorController extends Controller
             // CHECK EXIST NO REGISTRATION
             $error = [];
             $check_reg_no = Formulator::where([['id', '!=', $request->id],['reg_no', $request->reg_no]])->count();
-            if($check_reg_no > 0) {
+            if($request->membership_status === 'TA') {
+                $error['error_reg_no'] = false;
+            } else if($check_reg_no > 0) {
                 $error['error_reg_no'] = true;
             }
 
             // CHECK EXIST NO SERTIFIKAT
             $check_cert_no = Formulator::where([['id', '!=', $request->id],['cert_no', $request->cert_no]])->count();
-            if($check_cert_no > 0) {
+            if($request->membership_status === 'TA') {
+                $error['error_cert_no'] = false;
+            } else if($check_cert_no > 0) {
                 $error['error_cert_no'] = true;
             }
 
