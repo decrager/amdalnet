@@ -140,4 +140,8 @@ export default {
 .expand-container__right {
   text-align: right;
 }
+.pagination-container {
+  background: #041608;
+  padding: 32px 16px;
+}
 </style>

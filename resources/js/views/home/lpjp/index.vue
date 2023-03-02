@@ -204,4 +204,9 @@ export default {
   color: #fff;
   padding: 0.5em;
 }
+.pagination-container {
+  background: #041608;
+  padding: 32px 16px;
+}
 </style>
+
