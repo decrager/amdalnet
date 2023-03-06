@@ -3161,7 +3161,11 @@ class AndalComposingController extends Controller
     {
         $project = Project::findOrFail($id_project);
         $document_attachment = DocumentAttachment::where([['id_project', $id_project],['type', 'Dokumen Andal']])->first();
-        $pdf_url = $this->docxToPdf($document_attachment->attachment);
+        $pdf_url = null;
+        $fileDoc = Storage::disk('public')->size('workspace/' . strtolower(str_replace('/', '-', $project->id)) . '-andal'  . '.docx');
+        if ($fileDoc < 100000000) {
+            $pdf_url = $this->docxToPdf($document_attachment->attachment);
+        }
 
         return response()->json([
             'docx_url' => $document_attachment->attachment,
