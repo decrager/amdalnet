@@ -149,6 +149,26 @@ final class Document
         $context = stream_context_create($opts);
         $response_data = file_get_contents($urlToConverter, FALSE, $context);
 
+        // $curl = curl_init();
+        //     curl_setopt_array($curl, [
+        //     CURLOPT_URL => $urlToConverter,
+        //     CURLOPT_RETURNTRANSFER => true,
+        //     CURLOPT_ENCODING => '',
+        //     CURLOPT_MAXREDIRS => 10,
+        //     CURLOPT_TIMEOUT => 0,
+        //     CURLOPT_FOLLOWLOCATION => true,
+        //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        //     CURLOPT_CUSTOMREQUEST => 'POST',
+        //     CURLOPT_POSTFIELDS => $data,
+        //     CURLOPT_HTTPHEADER => [
+        //        'Authorization: Bearer'. $headerToken,
+        //        'Content-Type: application/json',
+        //        'Accept: application/json',
+        //       ],
+        //     ]);
+        //     $response_data = curl_exec($curl);
+        //     curl_close($curl);
+
         return $response_data;
     }
 

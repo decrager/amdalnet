@@ -15,6 +15,15 @@
       </h2>
       <el-row :gutter="20" style="margin-top: 20px">
         <el-col :sm="24" :md="14">
+          <div v-if="!isPemerintah" role="alert" class="el-alert el-alert--info is-light space">
+            <i class="el-alert__icon el-icon-warning is-big" />
+            <div class="el-alert__content">
+              <p class="el-alert__description">
+                Dokumen yang ukuran file nya lebih dari <b> 100 MB </b>, Maka Preview dan tombol download PDF nya tidak akan muncul
+              </p>
+            </div>
+            <br><br>
+          </div>
           <div style="margin-bottom: 8px">
             <a
               v-if="showDocumentAndal"
@@ -29,7 +38,7 @@
             </a>
           </div>
           <iframe
-            v-if="showDocumentAndal"
+            v-if="showDocumentAndal && andalPdfUrl"
             :src="`https://docs.google.com/gview?url=${encodeURIComponent(
               andalPdfUrl
             )}&embedded=true`"
