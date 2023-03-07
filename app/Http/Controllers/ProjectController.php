@@ -1551,7 +1551,7 @@ class ProjectController extends Controller
         $document->setValue('no_registrasi', $dataProject->registration_no ?? '-');
         $document->setValue('pemrakarsa', htmlspecialchars($dataProject->initiator->name ?? '-'));
         $document->setValue('penanggung_jawab', $dataProject->initiator->pic ?? '-');
-        $document->setValue('alamat_penanggung_jawab', $dataProject->initiator->address ?? '-');
+        $document->setValue('alamat_penanggung_jawab', htmlspecialchars($dataProject->initiator->address ?? '-'));
         $document->setValue('nomor_telepon', $dataProject->initiator->phone ?? '-');
         $document->setValue('jabatan', $dataProject->initiator->pic_role ?? '-');
         $document->setValue('email_pemrakarsa', $dataProject->initiator->email ?? '-');
