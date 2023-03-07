@@ -176,13 +176,18 @@ class TestMeetRKLRPLController extends Controller
                         $pdf_url = $this->docxToPdf($document_attachment->attachment);
                         $filename = 'ukl-upl-' . strtolower(str_replace('/', '-', $project->project_title));
                         if ($meeting->document_type == 'rkl-rpl') {
+                            $andal = DocumentAttachment::where('id_project', $project->id)->where('type', 'Dokumen Andal')->first()->attachment;
+                            $fileDoc = Storage::disk('public')->size('workspace/' . strtolower(str_replace('/', '-', $project->id)) . '-andal'  . '.docx');
+                            if ($fileDoc < 100000000) {
+                                $andal = $this->docxToPdf(DocumentAttachment::where('id_project', $project->id)->where('type', 'Dokumen Andal')->first()->attachment);
+                            }
                             $filename = [
                                 'rkl' => 'rkl-rpl-' . strtolower(str_replace('/', '-', $project->project_title)),
                                 'andal' => 'andal-' . strtolower(str_replace('/', '-', $project->project_title))
                             ];
                             $pdf_url = [
                                 'rkl' => $this->docxToPdf(DocumentAttachment::where('id_project', $project->id)->where('type', 'Dokumen RKL RPL')->first()->attachment),
-                                'andal' => $this->docxToPdf(DocumentAttachment::where('id_project', $project->id)->where('type', 'Dokumen Andal')->first()->attachment)
+                                'andal' => $andal,
                             ];
                         }
                         $tmpName = tempnam(sys_get_temp_dir(),'');
