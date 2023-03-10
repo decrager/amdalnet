@@ -1,0 +1,23 @@
+Table
+------
+components
+project_stages
+
+rona_awal
+component_types
+
+Akses menu menggunakan akun superadmin
+
+membuat standar spesifik berdasarkan no. KBLI & nama KBLI
+parameter(tahap kegiatan->components, komponen kegiatan)
+
+Step pembuatan sistem Braindev
+1. Buat migration
+2. Buat controller
+3. Buat entity(model)
+4. Buat route resource
+5. Buat folder views di Vue JS
+6. Pada index, buat tag template
+7. Buat variabel yang menampung URL
+   -> const businessResource = new Resource('business');
+8. CRUD pada vue dengan menggunakan method businessResource.update();

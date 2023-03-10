@@ -9,6 +9,7 @@ import Layout from '@/layout';
 // import chartsRoutes from './modules/charts';
 // import tableRoutes from './modules/table';
 import adminRoutes from './modules/admin';
+import testPageRoutes from './modules/testPage';
 // import nestedRoutes from './modules/nested';
 import errorRoutes from './modules/error';
 // import excelRoutes from './modules/excel';
@@ -278,6 +279,7 @@ export const asyncRoutes = [
   tukProfileRoutes,
   tukProjectRoutes,
   adminRoutes,
+  testPageRoutes,
   projectRoutes,
   screeningRoutes,
   scopingRoutes,
